@@ -82,7 +82,7 @@ async function syncMatches(): Promise<void> {
 
 new CronBuilder()
     .withHour(6)
-    .withMinutes(10)
+    .withMinutes(35)
     .schedule(syncMatches)
     .build()
 
@@ -99,7 +99,7 @@ async function deleteMatches() {
 }
 
 new CronBuilder()
-    .withHour(5)
+    .withHour(6)
     .withMinutes(45)
     .schedule(deleteMatches)
     .build()
@@ -117,7 +117,7 @@ async function deleteSynchronizations() {
 }
 
 new CronBuilder()
-    .withHour(5)
+    .withHour(6)
     .withMinutes(55)
     .schedule(deleteSynchronizations)
     .build()
