@@ -71,7 +71,7 @@ export class RouterFacade {
             strict: true
         }).get('/', async (request, response) => {
             response.status(200).json({
-                message: `Howdy Heroku. I am alive!`,
+                message: `Howdy Render. I am alive!`,
                 envVar: this.env
             })
         })
