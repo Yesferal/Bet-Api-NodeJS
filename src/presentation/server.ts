@@ -81,8 +81,8 @@ async function syncMatches(): Promise<void> {
 }
 
 new CronBuilder()
-    .withHour(5)
-    .withMinutes(5)
+    .withHour(6)
+    .withMinutes(10)
     .schedule(syncMatches)
     .build()
 
