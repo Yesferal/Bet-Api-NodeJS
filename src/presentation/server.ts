@@ -3,6 +3,9 @@ import { Di } from './di/di'
 import { CronBuilder } from 'bet-core-node/lib/framework/cron/cron.builder'
 import { PrivateEnv } from './util/private.env'
 import { Env } from './util/env'
+import { NodePackage } from 'bet-core-node/lib/framework/node/node.package'
+
+console.log(`Core Version: ${new NodePackage().getVersion()}`)
 
 /**
  * Public Environment Variables
