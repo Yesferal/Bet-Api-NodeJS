@@ -73,7 +73,7 @@ function updateMatchesFinished(): void {
 
 new CronBuilder()
     .withHour(GMT_HOUR.toString())
-    .withMinutes("0")
+    .withMinutes("10")
     .schedule(updateMatchesFinished)
     .build()
 
@@ -91,7 +91,7 @@ async function syncMatches(): Promise<void> {
 
 new CronBuilder()
     .withHour(GMT_HOUR.toString())
-    .withMinutes("5")
+    .withMinutes("8")
     .schedule(syncMatches)
     .build()
 
