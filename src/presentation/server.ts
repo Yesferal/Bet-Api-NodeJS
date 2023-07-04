@@ -43,16 +43,16 @@ const privateEnv: PrivateEnv = {
 const di = new Di(env, privateEnv)
 
 /**
- * GMT-5
+ * GMT-0
  */
-const GMT_HOUR = 5
+const GMT_HOUR = 0
 
 /**
  * America/Lima timezone as Date
- * America/Lima hour GTM-5
- * so 5 (Server hour) - 5 (value set here) -> midnight at Lima
+ * America/Lima hour GTM-0
+ * so 0 (Server hour) - 0 (value set here) -> midnight at GMT
  */
-function getDateForLima(): Date {
+function getDateAtMidnight(): Date {
     const date = new Date()
     date.setHours(GMT_HOUR)
     date.setMinutes(0)
@@ -66,14 +66,14 @@ function getDateForLima(): Date {
  * Update matches from yesterday
  */
 function updateMatchesFinished(): void {
-    const yesterday = di.resolveDateUtil().getDayBefore(getDateForLima())
+    const yesterday = di.resolveDateUtil().getDayBefore(getDateAtMidnight())
 
     di.resolveUpdateMatchesFinishedUseCase().execute(yesterday)
 }
 
 new CronBuilder()
-    .withHour(GMT_HOUR.toString())
-    .withMinutes("10")
+    .withHour("*")
+    .withMinutes("0")
     .schedule(updateMatchesFinished)
     .build()
 
@@ -81,7 +81,7 @@ new CronBuilder()
 * Sync matches for three days before
 */
 async function syncMatches(): Promise<void> {
-    const today = getDateForLima()
+    const today = getDateAtMidnight()
     const dateUtil = di.resolveDateUtil()
     const threeDaysAfter = dateUtil.getDayAfter(dateUtil.getDayAfter(dateUtil.getDayAfter(today)))
 
@@ -91,7 +91,7 @@ async function syncMatches(): Promise<void> {
 
 new CronBuilder()
     .withHour(GMT_HOUR.toString())
-    .withMinutes("8")
+    .withMinutes("5")
     .schedule(syncMatches)
     .build()
 
@@ -100,7 +100,7 @@ new CronBuilder()
  */
 async function deleteMatches() {
     const DAYS = 15
-    const today = getDateForLima()
+    const today = getDateAtMidnight()
     const anyDaysAgo = di.resolveDateUtil().getDaysBefore(today, DAYS)
 
     await di.resolveDeleteMatchesUseCase().execute(anyDaysAgo)
@@ -109,7 +109,7 @@ async function deleteMatches() {
 
 new CronBuilder()
     .withHour((GMT_HOUR+1).toString())
-    .withMinutes("45")
+    .withMinutes("30")
     .schedule(deleteMatches)
     .build()
 
@@ -118,7 +118,7 @@ new CronBuilder()
  */
 async function deleteSynchronizations() {
     const DAYS = 30
-    const today = getDateForLima()
+    const today = getDateAtMidnight()
     const anyDaysAgo = di.resolveDateUtil().getDaysBefore(today, DAYS)
 
     await di.resolveDeleteSynchronizationsUseCase().execute(anyDaysAgo)
@@ -127,7 +127,7 @@ async function deleteSynchronizations() {
 
 new CronBuilder()
     .withHour((GMT_HOUR+1).toString())
-    .withMinutes("55")
+    .withMinutes("35")
     .schedule(deleteSynchronizations)
     .build()
 
