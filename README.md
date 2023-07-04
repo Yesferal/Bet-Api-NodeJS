@@ -9,21 +9,21 @@ First, this project needs Git and Node JS previously installed, the steps for in
 
 Then, you should clone the repository.
 ```
-$ git clone git@github.com:Yesferal/Bet-NodeJs.git
-$ cd Bet-NodeJs
+git clone git@github.com:Yesferal/Bet-Api-NodeJS.git
+cd Bet-Api-NodeJS
 ```
 
 Also you have to request the `.env` file to the project admin. This file contains information that the project needs to run correctly. 
 
 Finally, you need to install the project dependencies like `express`, `nodemon`, `axios` or `typescript`.
 ```
-$ npm install
+npm install
 ``` 
 
 ## Usage
 Open a terminal and run.
 ```
-$ npm run dev
+npm run dev
 ```
 Then open your local browser and try accessing.
 ```

@@ -68,6 +68,8 @@ function getDateAtMidnight(): Date {
 function updateMatchesFinished(): void {
     const yesterday = di.resolveDateUtil().getDayBefore(getDateAtMidnight())
 
+    // TODO: Make this on just one request, or at least 1 per day and one per hour
+    di.resolveUpdateMatchesFinishedUseCase().execute(getDateAtMidnight())
     di.resolveUpdateMatchesFinishedUseCase().execute(yesterday)
 }
 
