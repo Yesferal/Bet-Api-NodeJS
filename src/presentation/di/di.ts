@@ -63,15 +63,15 @@ export class Di {
     }
 
     private resolveAxioDataSourceWithFirstAuth() {
-        return this.axioDataSourceWithFirstAuth || (this.axioDataSourceWithFirstAuth = new AxiosDataSource(this.privateEnv.FOOTBALL_API_BASE_URL, this.privateEnv.FOOTBALL_FIRST_API_KEY))
+        return this.axioDataSourceWithFirstAuth || (this.axioDataSourceWithFirstAuth = new AxiosDataSource(this.privateEnv.FOOTBALL_API_BASE_URL, this.privateEnv.FOOTBALL_FIRST_API_KEY, this.env.TIMEZONE))
     }
 
     private resolveAxioDataSourceWithSecondAuth() {
-        return this.axioDataSourceWithSecondAuth || (this.axioDataSourceWithSecondAuth = new AxiosDataSource(this.privateEnv.FOOTBALL_API_BASE_URL, this.privateEnv.FOOTBALL_SECOND_API_KEY))
+        return this.axioDataSourceWithSecondAuth || (this.axioDataSourceWithSecondAuth = new AxiosDataSource(this.privateEnv.FOOTBALL_API_BASE_URL, this.privateEnv.FOOTBALL_SECOND_API_KEY, this.env.TIMEZONE))
     }
 
     private resolveAxioDataSourceWithThirdAuth() {
-        return this.axioDataSourceWithThirdAuth || (this.axioDataSourceWithThirdAuth = new AxiosDataSource(this.privateEnv.FOOTBALL_API_BASE_URL, this.privateEnv.FOOTBALL_THIRD_API_KEY))
+        return this.axioDataSourceWithThirdAuth || (this.axioDataSourceWithThirdAuth = new AxiosDataSource(this.privateEnv.FOOTBALL_API_BASE_URL, this.privateEnv.FOOTBALL_THIRD_API_KEY, this.env.TIMEZONE))
     }
 
     private resolveMongooseDataSource(): DatabaseDataSource {

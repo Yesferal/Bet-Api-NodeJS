@@ -12,5 +12,6 @@ export interface Env {
      * Its should increase/decrease dependning on the week results
      * in order to make the following probability more accurate
      */
-    CURRENT_ACCURACY: number
+    CURRENT_ACCURACY: number,
+    TIMEZONE: string
 }

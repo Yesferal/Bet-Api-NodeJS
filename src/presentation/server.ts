@@ -16,7 +16,8 @@ const env: Env = {
     DELAY_BY_REQUEST: Number(process.env.DELAY_BY_REQUEST) || 3600,
     APP_VERSION: process.env.npm_package_version || '',
     DELTA_PROBABILITY_ERROR: Number(process.env.DELTA_PROBABILITY_ERROR) || 0.1,
-    CURRENT_ACCURACY: Number(process.env.CURRENT_ACCURACY) || 0.75
+    CURRENT_ACCURACY: Number(process.env.CURRENT_ACCURACY) || 0.75,
+    TIMEZONE: process.env.TIMEZONE || ''
 }
 
 /**
@@ -42,13 +43,18 @@ const privateEnv: PrivateEnv = {
 const di = new Di(env, privateEnv)
 
 /**
+ * GMT-5
+ */
+const GMT_HOUR = 5
+
+/**
  * America/Lima timezone as Date
  * America/Lima hour GTM-5
  * so 5 (Server hour) - 5 (value set here) -> midnight at Lima
  */
 function getDateForLima(): Date {
     const date = new Date()
-    date.setHours(5)
+    date.setHours(GMT_HOUR)
     date.setMinutes(0)
     date.setSeconds(0)
     date.setMilliseconds(0)
@@ -66,8 +72,8 @@ function updateMatchesFinished(): void {
 }
 
 new CronBuilder()
-    .withHour(5)
-    .withMinutes(0)
+    .withHour(GMT_HOUR.toString())
+    .withMinutes("0")
     .schedule(updateMatchesFinished)
     .build()
 
@@ -84,8 +90,8 @@ async function syncMatches(): Promise<void> {
 }
 
 new CronBuilder()
-    .withHour(5)
-    .withMinutes(5)
+    .withHour(GMT_HOUR.toString())
+    .withMinutes("5")
     .schedule(syncMatches)
     .build()
 
@@ -102,8 +108,8 @@ async function deleteMatches() {
 }
 
 new CronBuilder()
-    .withHour(6)
-    .withMinutes(45)
+    .withHour((GMT_HOUR+1).toString())
+    .withMinutes("45")
     .schedule(deleteMatches)
     .build()
 
@@ -120,8 +126,8 @@ async function deleteSynchronizations() {
 }
 
 new CronBuilder()
-    .withHour(6)
-    .withMinutes(55)
+    .withHour((GMT_HOUR+1).toString())
+    .withMinutes("55")
     .schedule(deleteSynchronizations)
     .build()
 
