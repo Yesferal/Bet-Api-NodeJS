@@ -7,6 +7,7 @@ import { GetMatchDetailUseCase } from 'bet-core-node/lib/domain/usecase/get.matc
 import { GetSynchronizationDetailUseCase } from 'bet-core-node/lib/domain/usecase/get.synchronization.detail'
 import { GetSynchronizationsUseCase } from 'bet-core-node/lib/domain/usecase/get.synchronizations.usecase'
 import { GetAccuracyUseCase } from 'bet-core-node/lib/domain/usecase/get.accuracy.usecase'
+import { GetClientSettingsUseCase } from 'bet-core-node/lib/domain/usecase/client/get.client.settings.usecase'
 
 export class RouterFacade {
 
@@ -16,7 +17,8 @@ export class RouterFacade {
         private env: Env,
         private getSynchronizationDetailUseCase: GetSynchronizationDetailUseCase,
         private getSynchronizationsUseCase: GetSynchronizationsUseCase,
-        private getAccuracyUseCase: GetAccuracyUseCase
+        private getAccuracyUseCase: GetAccuracyUseCase,
+        private getClientSettingsUseCase: GetClientSettingsUseCase
     ) {}
 
     getMatchesRouter(): Router {
@@ -90,6 +92,26 @@ export class RouterFacade {
                     response.status(200).send(synchronization)
                 } else {
                     response.status(400).json({ message: ErrorMessage.BadRequestMissingDate })
+                }
+            } catch (e) {
+                console.log(e)
+                response.status(400).json({ message: ErrorMessage.BadRequest })
+            }
+        })
+    }
+
+    getAppSettings(): Router {
+        return express.Router({
+            strict: true
+        }).get('/:versionCode', async (request, response) => {
+            try {
+                const versionCode = request.query.versionCode?.toString()
+                if (versionCode) {
+                    const clientSettings = await this.getClientSettingsUseCase.execute(versionCode)
+
+                    response.status(200).send(clientSettings)
+                } else {
+                    response.status(400).json({ message: ErrorMessage.BadRequestMissingVersionCode })
                 }
             } catch (e) {
                 console.log(e)

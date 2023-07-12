@@ -26,9 +26,12 @@ import { GetBlackLeaguesListUseCase } from 'bet-core-node/lib/domain/usecase/get
 import { LeagueRepository } from 'bet-core-node/lib/domain/data/league.repository'
 import { FilterLeaguesDetectedUseCase } from 'bet-core-node/lib/domain/usecase/filter.leagues.detected.usecase'
 import { FilterLeaguesSelectedUseCase } from 'bet-core-node/lib/domain/usecase/filter.leagues.selected.usecase'
+import { GetClientSettingsUseCase } from 'bet-core-node/lib/domain/usecase/client/get.client.settings.usecase'
+import { ClientRepository } from 'bet-core-node/lib/domain/data/client/client.repository'
+import { ClientDataSource } from 'bet-core-node/lib/domain/abstraction/client/client.data.source'
 
 export class Di {
-    private mongooseDataSource: DatabaseDataSource | undefined
+    private mongooseDataSource: MongooseDataSource | undefined
     private matchRepository: MatchRepository | undefined
     private leagueRepository: LeagueRepository | undefined
     private axioDataSourceWithFirstAuth: ApiDataSource | undefined
@@ -45,10 +48,12 @@ export class Di {
     private getMatchesUseCase: GetMatchesUseCase | undefined
     private getBlackListLeagueUseCase: GetBlackLeaguesListUseCase | undefined
     private getMatchDetailUseCase: GetMatchDetailUseCase | undefined
+    private getClientSettingsUseCase: GetClientSettingsUseCase | undefined
     private routerFacade: RouterFacade | undefined
     private dateUtil: DateUtil | undefined
     private middleware: Middleware | undefined
     private synchronizationRepository: SynchronizationRepository | undefined
+    private clientRepository: ClientRepository | undefined
     private getSynchronizationDetailUseCase: GetSynchronizationDetailUseCase | undefined
     private getSynchronizationsUseCase: GetSynchronizationsUseCase | undefined
     private getAccuracyUseCase: GetAccuracyUseCase | undefined
@@ -74,7 +79,7 @@ export class Di {
         return this.axioDataSourceWithThirdAuth || (this.axioDataSourceWithThirdAuth = new AxiosDataSource(this.privateEnv.FOOTBALL_API_BASE_URL, this.privateEnv.FOOTBALL_THIRD_API_KEY, this.env.TIMEZONE))
     }
 
-    private resolveMongooseDataSource(): DatabaseDataSource {
+    private resolveMongoose(): MongooseDataSource {
         const mongooseConnection = new MongooseBuilder()
             .withUrl(this.privateEnv.DB_URL)
             .withName(this.privateEnv.DB_NAME)
@@ -83,12 +88,20 @@ export class Di {
         return this.mongooseDataSource || (this.mongooseDataSource = new MongooseDataSource(mongooseConnection, this.resolveDateUtil()))
     }
 
+    private resolveDatabaseDataSource(): DatabaseDataSource {
+        return this.resolveMongoose()
+    }
+
+    private resolveClientDataSource(): ClientDataSource {
+        return this.resolveMongoose()
+    }
+
     private resolveMatchRepository() {
-        return this.matchRepository || (this.matchRepository = new MatchRepository(this.resolveAxioDataSourceWithFirstAuth(), this.resolveMongooseDataSource()))
+        return this.matchRepository || (this.matchRepository = new MatchRepository(this.resolveAxioDataSourceWithFirstAuth(), this.resolveDatabaseDataSource()))
     }
 
     private resolveLeagueRepository() {
-        return this.leagueRepository || (this.leagueRepository = new LeagueRepository(this.resolveMongooseDataSource()))
+        return this.leagueRepository || (this.leagueRepository = new LeagueRepository(this.resolveDatabaseDataSource()))
     }
 
     private resolveStadingRepositoryWithFirstAuth() {
@@ -119,7 +132,11 @@ export class Di {
     }
 
     private resolveSynchronizationRepository() {
-        return this.synchronizationRepository || (this.synchronizationRepository = new SynchronizationRepository(this.resolveMongooseDataSource()))
+        return this.synchronizationRepository || (this.synchronizationRepository = new SynchronizationRepository(this.resolveDatabaseDataSource()))
+    }
+
+    private resolveClientRepository() {
+        return this.clientRepository || (this.clientRepository = new ClientRepository(this.resolveClientDataSource()))
     }
 
     resolveUpdateMatchesFinishedUseCase() {
@@ -176,8 +193,12 @@ export class Di {
         return this.getAccuracyUseCase || (this.getAccuracyUseCase = new GetAccuracyUseCase(this.resolveMatchRepository(), this.resolveDateUtil(), this.resolveGetBetResultUseCase()))
     }
 
+    private resolveGetClientSettingsUseCase() {
+        return this.getClientSettingsUseCase || (this.getClientSettingsUseCase = new GetClientSettingsUseCase(this.resolveClientRepository()))
+    }
+
     resolveRouterFacade() {
-        return this.routerFacade || (this.routerFacade = new RouterFacade(this.resolveGetMatchDetailUseCase(), this.resolveGetMatchesUseCase(), this.env, this.resolveGetSynchronizationDetailUseCase(), this.resolveGetSynchronizationsUseCase(), this.resolveAccuracyUseCase()))
+        return this.routerFacade || (this.routerFacade = new RouterFacade(this.resolveGetMatchDetailUseCase(), this.resolveGetMatchesUseCase(), this.env, this.resolveGetSynchronizationDetailUseCase(), this.resolveGetSynchronizationsUseCase(), this.resolveAccuracyUseCase(), this.resolveGetClientSettingsUseCase()))
     }
 
     resolveDateUtil() {

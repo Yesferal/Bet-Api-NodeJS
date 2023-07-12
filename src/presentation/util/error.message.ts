@@ -3,5 +3,6 @@ export enum ErrorMessage {
     BadRequestMissingDate = `Bad Request. Parameter [date] not found.`,
     BadRequestMissingFromOrTo = `Bad Request. Parameters [from or to] not found.`,
     BadRequestMissingId = `Bad Request. Parameter [id] not found.`,
+    BadRequestMissingVersionCode = `Bad Request. Parameter [versionCode] not found.`,
     Unauthorized = "Unauthorized. User has not been authenticated."
 }
