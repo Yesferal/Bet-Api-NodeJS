@@ -106,8 +106,9 @@ export class RouterFacade {
         }).get('/:versionCode', async (request, response) => {
             try {
                 const versionCode = request.query.versionCode?.toString()
-                if (versionCode) {
-                    const clientSettings = await this.getClientSettingsUseCase.execute(versionCode)
+                const platform = request.query.platform?.toString()
+                if (versionCode && platform) {
+                    const clientSettings = await this.getClientSettingsUseCase.execute(versionCode, platform)
 
                     response.status(200).send(clientSettings)
                 } else {
