@@ -29,6 +29,7 @@ import { FilterLeaguesSelectedUseCase } from 'bet-core-node/lib/domain/usecase/f
 import { GetClientSettingsUseCase } from 'bet-core-node/lib/domain/usecase/client/get.client.settings.usecase'
 import { ClientRepository } from 'bet-core-node/lib/domain/data/client/client.repository'
 import { ClientDataSource } from 'bet-core-node/lib/domain/abstraction/client/client.data.source'
+import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/server/sync.matches.by.league.usecase'
 
 export class Di {
     private mongooseDataSource: MongooseDataSource | undefined
@@ -44,6 +45,7 @@ export class Di {
     private standingRepositoryWithThirdAuth: StandingRepository | undefined
     private filterMatchesUseCaseWithThirdAuth: FilterMatchesUseCase | undefined
     private syncMatchesUseCase: SyncMatchesUseCase | undefined
+    private syncMatchesByLeagueUseCase: SyncMatchesByLeagueUseCase | undefined
     private updateMatchesFinishedUseCase: UpdateMatchesFinishedUseCase | undefined
     private getMatchesUseCase: GetMatchesUseCase | undefined
     private getBlackListLeagueUseCase: GetBlackLeaguesListUseCase | undefined
@@ -117,7 +119,7 @@ export class Di {
     }
 
     private resolveFilterMatchesUseCaseWithFirstAuth() {
-        return this.filterMatchesUseCaseWithFirstAuth || (this.filterMatchesUseCaseWithFirstAuth = new FilterMatchesUseCase(this.resolveStadingRepositoryWithFirstAuth(), this.env.DELTA_PROBABILITY_ERROR, this.env.CURRENT_ACCURACY, 
+        return this.filterMatchesUseCaseWithFirstAuth || (this.filterMatchesUseCaseWithFirstAuth = new FilterMatchesUseCase(this.resolveStadingRepositoryWithFirstAuth(), this.env.DELTA_PROBABILITY_ERROR, this.env.CURRENT_ACCURACY,
             this.privateEnv.ESTIMATE_HOME_POINTS_PER_ROUND, this.privateEnv.ESTIMATE_AWAY_POINTS_PER_ROUND))
     }
 
@@ -144,9 +146,9 @@ export class Di {
     }
 
     resolveSyncMatchesUseCase() {
-        return this.syncMatchesUseCase || (this.syncMatchesUseCase = new SyncMatchesUseCase(this.resolveMatchRepository(), 
-        [this.resolveFilterMatchesUseCaseWithFirstAuth(), this.resolveFilterMatchesUseCaseWithSecondAuth(), this.resolveFilterMatchesUseCaseWithThirdAuth()], 
-        this.resolveFilterLeaguesDetectedUseCase(), this.resolveFilterLeaguesSelectedUseCase(), this.env.ALLOWED_REQUESTS, this.env.DELAY_BY_REQUEST, this.resolveSynchronizationRepository(), this.resolveDateUtil()))
+        return this.syncMatchesUseCase || (this.syncMatchesUseCase = new SyncMatchesUseCase(this.resolveMatchRepository(),
+            [this.resolveFilterMatchesUseCaseWithFirstAuth(), this.resolveFilterMatchesUseCaseWithSecondAuth(), this.resolveFilterMatchesUseCaseWithThirdAuth()],
+            this.resolveFilterLeaguesDetectedUseCase(), this.resolveFilterLeaguesSelectedUseCase(), this.env.ALLOWED_REQUESTS, this.env.DELAY_BY_REQUEST, this.resolveSynchronizationRepository(), this.resolveDateUtil()))
     }
 
     private resolveFilterLeaguesDetectedUseCase() {
@@ -198,7 +200,11 @@ export class Di {
     }
 
     resolveRouterFacade() {
-        return this.routerFacade || (this.routerFacade = new RouterFacade(this.resolveGetMatchDetailUseCase(), this.resolveGetMatchesUseCase(), this.env, this.resolveGetSynchronizationDetailUseCase(), this.resolveGetSynchronizationsUseCase(), this.resolveAccuracyUseCase(), this.resolveGetClientSettingsUseCase()))
+        return this.routerFacade || (this.routerFacade = new RouterFacade(this.resolveGetMatchDetailUseCase(), this.resolveGetMatchesUseCase(), this.env, this.resolveGetSynchronizationDetailUseCase(), this.resolveGetSynchronizationsUseCase(), this.resolveAccuracyUseCase(), this.resolveGetClientSettingsUseCase(), this.resolveSyncMatchesByLeagueUseCase()))
+    }
+
+    private resolveSyncMatchesByLeagueUseCase() {
+        return this.syncMatchesByLeagueUseCase || (this.syncMatchesByLeagueUseCase = new SyncMatchesByLeagueUseCase(this.resolveMatchRepository()))
     }
 
     resolveDateUtil() {

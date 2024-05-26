@@ -6,6 +6,7 @@ import moment from 'moment-timezone'
 import { GetMatchDetailUseCase } from 'bet-core-node/lib/domain/usecase/get.match.detail.usecase'
 import { GetSynchronizationDetailUseCase } from 'bet-core-node/lib/domain/usecase/get.synchronization.detail'
 import { GetSynchronizationsUseCase } from 'bet-core-node/lib/domain/usecase/get.synchronizations.usecase'
+import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/server/sync.matches.by.league.usecase'
 import { GetAccuracyUseCase } from 'bet-core-node/lib/domain/usecase/get.accuracy.usecase'
 import { GetClientSettingsUseCase } from 'bet-core-node/lib/domain/usecase/client/get.client.settings.usecase'
 
@@ -18,7 +19,8 @@ export class RouterFacade {
         private getSynchronizationDetailUseCase: GetSynchronizationDetailUseCase,
         private getSynchronizationsUseCase: GetSynchronizationsUseCase,
         private getAccuracyUseCase: GetAccuracyUseCase,
-        private getClientSettingsUseCase: GetClientSettingsUseCase
+        private getClientSettingsUseCase: GetClientSettingsUseCase,
+        private syncMatchesByLeagueUseCase: SyncMatchesByLeagueUseCase
     ) {}
 
     getMatchesRouter(): Router {
@@ -161,6 +163,27 @@ export class RouterFacade {
                     const accuracy = await this.getAccuracyUseCase.execute(date)
 
                     response.status(200).send(accuracy)
+                } else {
+                    response.status(400).json({ message: ErrorMessage.BadRequestMissingDate })
+                }
+            } catch (e) {
+                console.log(e)
+                response.status(400).json({ message: ErrorMessage.BadRequest })
+            }
+        })
+    }
+
+    getSyncFixtureByLeagueRouter(): Router {
+        return express.Router({
+            strict: true
+        }).get('/:league', async (request, response) => {
+            try {
+                const leagueString = request.query.league?.toString()
+                const seasonString = request.query.season?.toString()
+                if (leagueString && seasonString) {
+                    const matches = await this.syncMatchesByLeagueUseCase.execute(leagueString, seasonString)
+
+                    response.status(200).send(matches)
                 } else {
                     response.status(400).json({ message: ErrorMessage.BadRequestMissingDate })
                 }
