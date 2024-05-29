@@ -173,6 +173,10 @@ export class RouterFacade {
         })
     }
 
+    /**
+     *  BetCup Section 
+     */
+
     getSyncFixtureByLeagueRouter(): Router {
         return express.Router({
             strict: true
@@ -184,6 +188,27 @@ export class RouterFacade {
                     const matches = await this.syncMatchesByLeagueUseCase.execute(leagueString, seasonString)
 
                     response.status(200).send(matches)
+                } else {
+                    response.status(400).json({ message: ErrorMessage.BadRequestMissingDate })
+                }
+            } catch (e) {
+                console.log(e)
+                response.status(400).json({ message: ErrorMessage.BadRequest })
+            }
+        })
+    }
+
+    getBetCupMatchesRouter(): Router {
+        return express.Router({
+            strict: true
+        }).get('/:league', async (request, response) => {
+            try {
+                const leagueString = request.query.league?.toString()
+                const seasonString = request.query.season?.toString()
+                if (leagueString && seasonString) {
+                    //const matches = await this.getBetCupMatches.execute(leagueString, seasonString)
+
+                    //response.status(200).send(matches)
                 } else {
                     response.status(400).json({ message: ErrorMessage.BadRequestMissingDate })
                 }

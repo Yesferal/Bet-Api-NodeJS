@@ -30,6 +30,7 @@ import { GetClientSettingsUseCase } from 'bet-core-node/lib/domain/usecase/clien
 import { ClientRepository } from 'bet-core-node/lib/domain/data/client/client.repository'
 import { ClientDataSource } from 'bet-core-node/lib/domain/abstraction/client/client.data.source'
 import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/server/sync.matches.by.league.usecase'
+import { BetCupDataSource } from 'bet-core-node/lib/domain/abstraction/betcup/betcup.client.data.source'
 
 export class Di {
     private mongooseDataSource: MongooseDataSource | undefined
@@ -98,8 +99,12 @@ export class Di {
         return this.resolveMongoose()
     }
 
+    private resolveBetCupClientDataSource(): BetCupDataSource {
+        return this.resolveMongoose()
+    }
+
     private resolveMatchRepository() {
-        return this.matchRepository || (this.matchRepository = new MatchRepository(this.resolveAxioDataSourceWithFirstAuth(), this.resolveDatabaseDataSource()))
+        return this.matchRepository || (this.matchRepository = new MatchRepository(this.resolveAxioDataSourceWithFirstAuth(), this.resolveDatabaseDataSource(), this.resolveBetCupClientDataSource()))
     }
 
     private resolveLeagueRepository() {
