@@ -9,6 +9,7 @@ import { GetSynchronizationsUseCase } from 'bet-core-node/lib/domain/usecase/get
 import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/server/sync.matches.by.league.usecase'
 import { GetAccuracyUseCase } from 'bet-core-node/lib/domain/usecase/get.accuracy.usecase'
 import { GetClientSettingsUseCase } from 'bet-core-node/lib/domain/usecase/client/get.client.settings.usecase'
+import { GetBetCupMatchesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.matches.usecase'
 
 export class RouterFacade {
 
@@ -20,7 +21,8 @@ export class RouterFacade {
         private getSynchronizationsUseCase: GetSynchronizationsUseCase,
         private getAccuracyUseCase: GetAccuracyUseCase,
         private getClientSettingsUseCase: GetClientSettingsUseCase,
-        private syncMatchesByLeagueUseCase: SyncMatchesByLeagueUseCase
+        private syncMatchesByLeagueUseCase: SyncMatchesByLeagueUseCase,
+        private getBetCupMatchesUseCase: GetBetCupMatchesUseCase
     ) {}
 
     getMatchesRouter(): Router {
@@ -206,9 +208,9 @@ export class RouterFacade {
                 const leagueString = request.query.league?.toString()
                 const seasonString = request.query.season?.toString()
                 if (leagueString && seasonString) {
-                    //const matches = await this.getBetCupMatches.execute(leagueString, seasonString)
+                    const matches = await this.getBetCupMatchesUseCase.execute(leagueString, seasonString)
 
-                    //response.status(200).send(matches)
+                    response.status(200).send(matches)
                 } else {
                     response.status(400).json({ message: ErrorMessage.BadRequestMissingDate })
                 }

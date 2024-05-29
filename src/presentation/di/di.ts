@@ -31,6 +31,7 @@ import { ClientRepository } from 'bet-core-node/lib/domain/data/client/client.re
 import { ClientDataSource } from 'bet-core-node/lib/domain/abstraction/client/client.data.source'
 import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/server/sync.matches.by.league.usecase'
 import { BetCupDataSource } from 'bet-core-node/lib/domain/abstraction/betcup/betcup.client.data.source'
+import { GetBetCupMatchesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.matches.usecase'
 
 export class Di {
     private mongooseDataSource: MongooseDataSource | undefined
@@ -65,6 +66,7 @@ export class Di {
     private deleteSynchronizationsUseCase: DeleteSynchronizationsUseCase | undefined
     private filterLeaguesDetectedUseCase: FilterLeaguesDetectedUseCase | undefined
     private filterLeaguesSelectedUseCase: FilterLeaguesSelectedUseCase | undefined
+    private getBetCupMatchesUseCase: GetBetCupMatchesUseCase | undefined
 
     constructor(private env: Env, private privateEnv: PrivateEnv) {
         console.log(`Init with config vars: ${JSON.stringify(env)}`)
@@ -205,7 +207,7 @@ export class Di {
     }
 
     resolveRouterFacade() {
-        return this.routerFacade || (this.routerFacade = new RouterFacade(this.resolveGetMatchDetailUseCase(), this.resolveGetMatchesUseCase(), this.env, this.resolveGetSynchronizationDetailUseCase(), this.resolveGetSynchronizationsUseCase(), this.resolveAccuracyUseCase(), this.resolveGetClientSettingsUseCase(), this.resolveSyncMatchesByLeagueUseCase()))
+        return this.routerFacade || (this.routerFacade = new RouterFacade(this.resolveGetMatchDetailUseCase(), this.resolveGetMatchesUseCase(), this.env, this.resolveGetSynchronizationDetailUseCase(), this.resolveGetSynchronizationsUseCase(), this.resolveAccuracyUseCase(), this.resolveGetClientSettingsUseCase(), this.resolveSyncMatchesByLeagueUseCase(), this.resolveGetBetCupMatchesUseCase()))
     }
 
     private resolveSyncMatchesByLeagueUseCase() {
@@ -218,5 +220,9 @@ export class Di {
 
     resolveMiddleware() {
         return this.middleware || (this.middleware = new Middleware(this.privateEnv.BET_KEY_AUTH, [this.privateEnv.ANDROID_SECRET_KEY, this.privateEnv.IOS_SECRET_KEY]))
+    }
+
+    resolveGetBetCupMatchesUseCase() {
+        return this.getBetCupMatchesUseCase || (this.getBetCupMatchesUseCase = new GetBetCupMatchesUseCase(this.resolveMatchRepository()))
     }
 }
