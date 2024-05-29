@@ -10,6 +10,7 @@ import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/ser
 import { GetAccuracyUseCase } from 'bet-core-node/lib/domain/usecase/get.accuracy.usecase'
 import { GetClientSettingsUseCase } from 'bet-core-node/lib/domain/usecase/client/get.client.settings.usecase'
 import { GetBetCupMatchesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.matches.usecase'
+import { GetBetCupLeaguesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.league.usecase'
 
 export class RouterFacade {
 
@@ -22,7 +23,8 @@ export class RouterFacade {
         private getAccuracyUseCase: GetAccuracyUseCase,
         private getClientSettingsUseCase: GetClientSettingsUseCase,
         private syncMatchesByLeagueUseCase: SyncMatchesByLeagueUseCase,
-        private getBetCupMatchesUseCase: GetBetCupMatchesUseCase
+        private getBetCupMatchesUseCase: GetBetCupMatchesUseCase,
+        private getBetCupLeaguesUseCase: GetBetCupLeaguesUseCase
     ) {}
 
     getMatchesRouter(): Router {
@@ -214,6 +216,21 @@ export class RouterFacade {
                 } else {
                     response.status(400).json({ message: ErrorMessage.BadRequestMissingDate })
                 }
+            } catch (e) {
+                console.log(e)
+                response.status(400).json({ message: ErrorMessage.BadRequest })
+            }
+        })
+    }
+
+    getBetCupLeaguesRouter(): Router {
+        return express.Router({
+            strict: true
+        }).get('/', async (request, response) => {
+            try {
+                const leagues = await this.getBetCupLeaguesUseCase.execute()
+
+                response.status(200).send(leagues)
             } catch (e) {
                 console.log(e)
                 response.status(400).json({ message: ErrorMessage.BadRequest })
