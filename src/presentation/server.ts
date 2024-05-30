@@ -75,7 +75,7 @@ function updateMatchesFinished(): void {
 
 new CronBuilder()
     .withHour("*")
-    .withMinutes("*/15")
+    .withMinutes("*/5")
     .schedule(updateMatchesFinished)
     .build()
 

@@ -226,7 +226,7 @@ export class RouterFacade {
     getBetCupLeaguesRouter(): Router {
         return express.Router({
             strict: true
-        }).get('/', async (request, response) => {
+        }).get('/:league', async (request, response) => {
             try {
                 const leagues = await this.getBetCupLeaguesUseCase.execute()
 

@@ -32,6 +32,7 @@ import { ClientDataSource } from 'bet-core-node/lib/domain/abstraction/client/cl
 import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/server/sync.matches.by.league.usecase'
 import { BetCupDataSource } from 'bet-core-node/lib/domain/abstraction/betcup/betcup.client.data.source'
 import { GetBetCupMatchesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.matches.usecase'
+import { GetBetCupLeaguesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.league.usecase'
 
 export class Di {
     private mongooseDataSource: MongooseDataSource | undefined
@@ -67,6 +68,7 @@ export class Di {
     private filterLeaguesDetectedUseCase: FilterLeaguesDetectedUseCase | undefined
     private filterLeaguesSelectedUseCase: FilterLeaguesSelectedUseCase | undefined
     private getBetCupMatchesUseCase: GetBetCupMatchesUseCase | undefined
+    private getBetCupLeagueUseCase: GetBetCupLeaguesUseCase | undefined
 
     constructor(private env: Env, private privateEnv: PrivateEnv) {
         console.log(`Init with config vars: ${JSON.stringify(env)}`)
@@ -110,7 +112,7 @@ export class Di {
     }
 
     private resolveLeagueRepository() {
-        return this.leagueRepository || (this.leagueRepository = new LeagueRepository(this.resolveDatabaseDataSource()))
+        return this.leagueRepository || (this.leagueRepository = new LeagueRepository(this.resolveDatabaseDataSource(), this.resolveBetCupClientDataSource(), this.resolveAxioDataSourceWithFirstAuth()))
     }
 
     private resolveStadingRepositoryWithFirstAuth() {
@@ -207,11 +209,11 @@ export class Di {
     }
 
     resolveRouterFacade() {
-        return this.routerFacade || (this.routerFacade = new RouterFacade(this.resolveGetMatchDetailUseCase(), this.resolveGetMatchesUseCase(), this.env, this.resolveGetSynchronizationDetailUseCase(), this.resolveGetSynchronizationsUseCase(), this.resolveAccuracyUseCase(), this.resolveGetClientSettingsUseCase(), this.resolveSyncMatchesByLeagueUseCase(), this.resolveGetBetCupMatchesUseCase()))
+        return this.routerFacade || (this.routerFacade = new RouterFacade(this.resolveGetMatchDetailUseCase(), this.resolveGetMatchesUseCase(), this.env, this.resolveGetSynchronizationDetailUseCase(), this.resolveGetSynchronizationsUseCase(), this.resolveAccuracyUseCase(), this.resolveGetClientSettingsUseCase(), this.resolveSyncMatchesByLeagueUseCase(), this.resolveGetBetCupMatchesUseCase(), this.resolveGetBetCupLeagueUseCase()))
     }
 
     private resolveSyncMatchesByLeagueUseCase() {
-        return this.syncMatchesByLeagueUseCase || (this.syncMatchesByLeagueUseCase = new SyncMatchesByLeagueUseCase(this.resolveMatchRepository()))
+        return this.syncMatchesByLeagueUseCase || (this.syncMatchesByLeagueUseCase = new SyncMatchesByLeagueUseCase(this.resolveMatchRepository(), this.resolveLeagueRepository()))
     }
 
     resolveDateUtil() {
@@ -224,5 +226,9 @@ export class Di {
 
     resolveGetBetCupMatchesUseCase() {
         return this.getBetCupMatchesUseCase || (this.getBetCupMatchesUseCase = new GetBetCupMatchesUseCase(this.resolveMatchRepository()))
+    }
+
+    resolveGetBetCupLeagueUseCase() {
+        return this.getBetCupLeagueUseCase || (this.getBetCupLeagueUseCase = new GetBetCupLeaguesUseCase(this.resolveLeagueRepository()))
     }
 }
