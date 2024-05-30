@@ -32,7 +32,8 @@ const privateEnv: PrivateEnv = {
     DB_URL: process.env.DB_URL || '',
     DB_NAME: process.env.DB_NAME || '',
     ANDROID_SECRET_KEY: process.env.ANDROID_SECRET_KEY || '',
-    IOS_SECRET_KEY: process.env.IOS_SECRET_KEY || '',
+    FLUTTER_SECRET_KEY: process.env.FLUTTER_SECRET_KEY || '',
+    ADMIN_SECRET_KEY: process.env.ADMIN_SECRET_KEY || '',
     ESTIMATE_HOME_POINTS_PER_ROUND: Number(process.env.ESTIMATE_HOME_POINTS_PER_ROUND) || 2,
     ESTIMATE_AWAY_POINTS_PER_ROUND: Number(process.env.ESTIMATE_AWAY_POINTS_PER_ROUND) || 0.9
 }

@@ -7,7 +7,8 @@ export interface PrivateEnv {
     DB_URL: string,
     DB_NAME: string,
     ANDROID_SECRET_KEY: string,
-    IOS_SECRET_KEY: string,
+    FLUTTER_SECRET_KEY: string,
+    ADMIN_SECRET_KEY: string,
     /**
      * Its mean that we estimate that, on average,
      * A home team make 2 points per match played

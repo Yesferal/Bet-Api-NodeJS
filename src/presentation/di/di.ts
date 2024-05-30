@@ -221,7 +221,7 @@ export class Di {
     }
 
     resolveMiddleware() {
-        return this.middleware || (this.middleware = new Middleware(this.privateEnv.BET_KEY_AUTH, [this.privateEnv.ANDROID_SECRET_KEY, this.privateEnv.IOS_SECRET_KEY]))
+        return this.middleware || (this.middleware = new Middleware(this.privateEnv.BET_KEY_AUTH, [this.privateEnv.ADMIN_SECRET_KEY, this.privateEnv.ANDROID_SECRET_KEY, this.privateEnv.FLUTTER_SECRET_KEY]))
     }
 
     resolveGetBetCupMatchesUseCase() {
