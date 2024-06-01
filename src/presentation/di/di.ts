@@ -16,7 +16,9 @@ import { PrivateEnv } from '../util/private.env'
 import { GetMatchDetailUseCase } from 'bet-core-node/lib/domain/usecase/get.match.detail.usecase'
 import { SynchronizationRepository } from 'bet-core-node/lib/domain/data/synchronization.repository'
 import { GetSynchronizationDetailUseCase } from 'bet-core-node/lib/domain/usecase/get.synchronization.detail'
-import { UpdateMatchesFinishedUseCase } from 'bet-core-node/lib/domain/usecase/update.matches.finished.usecase'
+import { UpdateMatchesByDateUseCase } from 'bet-core-node/lib/domain/usecase/server/update.matches.usecase'
+import { UpdatePredictedMatchesUseCase } from 'bet-core-node/lib/domain/usecase/server/update.predicted.matches.usecase'
+import { UpdateBetCupMatchesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/server/update.betcup.matches.usecase'
 import { GetSynchronizationsUseCase } from 'bet-core-node/lib/domain/usecase/get.synchronizations.usecase'
 import { GetAccuracyUseCase } from 'bet-core-node/lib/domain/usecase/get.accuracy.usecase'
 import { GetBetResultUseCase } from 'bet-core-node/lib/domain/usecase/get.bet.result.usecase'
@@ -49,7 +51,8 @@ export class Di {
     private filterMatchesUseCaseWithThirdAuth: FilterMatchesUseCase | undefined
     private syncMatchesUseCase: SyncMatchesUseCase | undefined
     private syncMatchesByLeagueUseCase: SyncMatchesByLeagueUseCase | undefined
-    private updateMatchesFinishedUseCase: UpdateMatchesFinishedUseCase | undefined
+    private updateMatchesByDateUseCase: UpdateMatchesByDateUseCase | undefined
+    private updatePredictedMatchesUseCase: UpdatePredictedMatchesUseCase | undefined
     private getMatchesUseCase: GetMatchesUseCase | undefined
     private getBlackListLeagueUseCase: GetBlackLeaguesListUseCase | undefined
     private getMatchDetailUseCase: GetMatchDetailUseCase | undefined
@@ -67,8 +70,13 @@ export class Di {
     private deleteSynchronizationsUseCase: DeleteSynchronizationsUseCase | undefined
     private filterLeaguesDetectedUseCase: FilterLeaguesDetectedUseCase | undefined
     private filterLeaguesSelectedUseCase: FilterLeaguesSelectedUseCase | undefined
+
+    /**
+     * BetCup Section
+     */
     private getBetCupMatchesUseCase: GetBetCupMatchesUseCase | undefined
     private getBetCupLeagueUseCase: GetBetCupLeaguesUseCase | undefined
+    private updateBetCupMatchesUseCase: UpdateBetCupMatchesUseCase | undefined
 
     constructor(private env: Env, private privateEnv: PrivateEnv) {
         console.log(`Init with config vars: ${JSON.stringify(env)}`)
@@ -150,8 +158,16 @@ export class Di {
         return this.clientRepository || (this.clientRepository = new ClientRepository(this.resolveClientDataSource()))
     }
 
-    resolveUpdateMatchesFinishedUseCase() {
-        return this.updateMatchesFinishedUseCase || (this.updateMatchesFinishedUseCase = new UpdateMatchesFinishedUseCase(this.resolveMatchRepository(), this.resolveSynchronizationRepository(), this.resolveDateUtil(), this.resolveGetBetResultUseCase()))
+    resolveUpdateMatchesByDateUseCase() {
+        return this.updateMatchesByDateUseCase || (this.updateMatchesByDateUseCase = new UpdateMatchesByDateUseCase(this.resolveMatchRepository(), this.resolveDateUtil(), [this.resolveUpdatePredictedMatchesUseCase(), this.resolveUpdateBetCupMatchesUseCase()]))
+    }
+
+    resolveUpdatePredictedMatchesUseCase() {
+        return this.updatePredictedMatchesUseCase || (this.updatePredictedMatchesUseCase = new UpdatePredictedMatchesUseCase(this.resolveMatchRepository(), this.resolveSynchronizationRepository(), this.resolveDateUtil(), this.resolveGetBetResultUseCase()))
+    }
+
+    resolveUpdateBetCupMatchesUseCase() {
+        return this.updateBetCupMatchesUseCase || (this.updateBetCupMatchesUseCase = new UpdateBetCupMatchesUseCase())
     }
 
     resolveSyncMatchesUseCase() {
