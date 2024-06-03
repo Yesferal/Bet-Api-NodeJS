@@ -73,7 +73,7 @@ function updateMatchesFinished(): void {
     di.resolveUpdateMatchesByDateUseCase().execute(getDateAtMidnight())
     di.resolveUpdateMatchesByDateUseCase().execute(yesterday)
 }
-updateMatchesFinished()
+
 new CronBuilder()
     .withHour("*")
     .withMinutes("*/5")
