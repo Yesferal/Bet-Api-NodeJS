@@ -167,7 +167,7 @@ export class Di {
     }
 
     resolveUpdateBetCupMatchesUseCase() {
-        return this.updateBetCupMatchesUseCase || (this.updateBetCupMatchesUseCase = new UpdateBetCupMatchesUseCase())
+        return this.updateBetCupMatchesUseCase || (this.updateBetCupMatchesUseCase = new UpdateBetCupMatchesUseCase(this.resolveMatchRepository(), this.resolveLeagueRepository(), this.resolveDateUtil()))
     }
 
     resolveSyncMatchesUseCase() {
