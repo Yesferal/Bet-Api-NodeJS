@@ -31,7 +31,7 @@ import { FilterLeaguesSelectedUseCase } from 'bet-core-node/lib/domain/usecase/f
 import { GetClientSettingsUseCase } from 'bet-core-node/lib/domain/usecase/client/get.client.settings.usecase'
 import { ClientRepository } from 'bet-core-node/lib/domain/data/client/client.repository'
 import { ClientDataSource } from 'bet-core-node/lib/domain/abstraction/client/client.data.source'
-import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/server/sync.matches.by.league.usecase'
+import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/betcup/server/sync.matches.by.league.usecase'
 import { BetCupDataSource } from 'bet-core-node/lib/domain/abstraction/betcup/betcup.client.data.source'
 import { GetBetCupMatchesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.matches.usecase'
 import { GetBetCupLeaguesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.league.usecase'
