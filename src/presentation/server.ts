@@ -151,6 +151,7 @@ new ServerBuilder()
      * BetCup Section
      */
     .registerPrivate('/syncFixtureByLeague', di.resolveRouterFacade().getSyncFixtureByLeagueRouter())
+    .registerPrivate('/betcupmatch', di.resolveRouterFacade().getBetCupMatchDetailRouter())
     .registerPrivate('/betcupmatches', di.resolveRouterFacade().getBetCupMatchesRouter())
     .registerPrivate('/betcupleagues', di.resolveRouterFacade().getBetCupLeaguesRouter())
     .build()

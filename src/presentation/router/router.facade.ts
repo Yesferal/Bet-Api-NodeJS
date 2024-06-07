@@ -10,6 +10,7 @@ import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/ser
 import { GetAccuracyUseCase } from 'bet-core-node/lib/domain/usecase/get.accuracy.usecase'
 import { GetClientSettingsUseCase } from 'bet-core-node/lib/domain/usecase/client/get.client.settings.usecase'
 import { GetBetCupMatchesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.matches.usecase'
+import { GetBetCupMatchDetailUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.match.detail.usecase'
 import { GetBetCupLeaguesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.league.usecase'
 
 export class RouterFacade {
@@ -24,7 +25,8 @@ export class RouterFacade {
         private getClientSettingsUseCase: GetClientSettingsUseCase,
         private syncMatchesByLeagueUseCase: SyncMatchesByLeagueUseCase,
         private getBetCupMatchesUseCase: GetBetCupMatchesUseCase,
-        private getBetCupLeaguesUseCase: GetBetCupLeaguesUseCase
+        private getBetCupLeaguesUseCase: GetBetCupLeaguesUseCase,
+        private getBetCupMatchDetailUseCase: GetBetCupMatchDetailUseCase,
     ) {}
 
     getMatchesRouter(): Router {
@@ -215,6 +217,26 @@ export class RouterFacade {
                     response.status(200).send(matches)
                 } else {
                     response.status(400).json({ message: ErrorMessage.BadRequestMissingDate })
+                }
+            } catch (e) {
+                console.log(e)
+                response.status(400).json({ message: ErrorMessage.BadRequest })
+            }
+        })
+    }
+
+    getBetCupMatchDetailRouter(): Router {
+        return express.Router({
+            strict: true
+        }).get('/:id', async (request, response) => {
+            try {
+                const id = request.query.id?.toString()
+                if (id) {
+                    const matches = await this.getBetCupMatchDetailUseCase.execute(id)
+
+                    response.status(200).send(matches)
+                } else {
+                    response.status(400).json({ message: ErrorMessage.BadRequestMissingId })
                 }
             } catch (e) {
                 console.log(e)

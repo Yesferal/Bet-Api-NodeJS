@@ -35,6 +35,7 @@ import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/ser
 import { BetCupDataSource } from 'bet-core-node/lib/domain/abstraction/betcup/betcup.client.data.source'
 import { GetBetCupMatchesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.matches.usecase'
 import { GetBetCupLeaguesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.league.usecase'
+import { GetBetCupMatchDetailUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.match.detail.usecase'
 
 export class Di {
     private mongooseDataSource: MongooseDataSource | undefined
@@ -75,6 +76,7 @@ export class Di {
      * BetCup Section
      */
     private getBetCupMatchesUseCase: GetBetCupMatchesUseCase | undefined
+    private getBetCupMatchDetailUseCase: GetBetCupMatchDetailUseCase | undefined
     private getBetCupLeagueUseCase: GetBetCupLeaguesUseCase | undefined
     private updateBetCupMatchesUseCase: UpdateBetCupMatchesUseCase | undefined
 
@@ -225,7 +227,7 @@ export class Di {
     }
 
     resolveRouterFacade() {
-        return this.routerFacade || (this.routerFacade = new RouterFacade(this.resolveGetMatchDetailUseCase(), this.resolveGetMatchesUseCase(), this.env, this.resolveGetSynchronizationDetailUseCase(), this.resolveGetSynchronizationsUseCase(), this.resolveAccuracyUseCase(), this.resolveGetClientSettingsUseCase(), this.resolveSyncMatchesByLeagueUseCase(), this.resolveGetBetCupMatchesUseCase(), this.resolveGetBetCupLeagueUseCase()))
+        return this.routerFacade || (this.routerFacade = new RouterFacade(this.resolveGetMatchDetailUseCase(), this.resolveGetMatchesUseCase(), this.env, this.resolveGetSynchronizationDetailUseCase(), this.resolveGetSynchronizationsUseCase(), this.resolveAccuracyUseCase(), this.resolveGetClientSettingsUseCase(), this.resolveSyncMatchesByLeagueUseCase(), this.resolveGetBetCupMatchesUseCase(), this.resolveGetBetCupLeagueUseCase(), this.resolveGetBetCupMatchDetailUseCase()))
     }
 
     private resolveSyncMatchesByLeagueUseCase() {
@@ -242,6 +244,10 @@ export class Di {
 
     resolveGetBetCupMatchesUseCase() {
         return this.getBetCupMatchesUseCase || (this.getBetCupMatchesUseCase = new GetBetCupMatchesUseCase(this.resolveMatchRepository()))
+    }
+
+    resolveGetBetCupMatchDetailUseCase() {
+        return this.getBetCupMatchDetailUseCase || (this.getBetCupMatchDetailUseCase = new GetBetCupMatchDetailUseCase(this.resolveMatchRepository()))
     }
 
     resolveGetBetCupLeagueUseCase() {
