@@ -34,7 +34,7 @@ import { ClientDataSource } from 'bet-core-node/lib/domain/abstraction/client/cl
 import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/betcup/server/sync.matches.by.league.usecase'
 import { BetCupDataSource } from 'bet-core-node/lib/domain/abstraction/betcup/betcup.client.data.source'
 import { GetBetCupMatchesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.matches.usecase'
-import { GetBetCupLeaguesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.league.usecase'
+import { GetBetCupLeaguesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.leagues.usecase'
 import { GetBetCupMatchDetailUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.match.detail.usecase'
 
 export class Di {
@@ -227,7 +227,7 @@ export class Di {
     }
 
     resolveRouterFacade() {
-        return this.routerFacade || (this.routerFacade = new RouterFacade(this.resolveGetMatchDetailUseCase(), this.resolveGetMatchesUseCase(), this.env, this.resolveGetSynchronizationDetailUseCase(), this.resolveGetSynchronizationsUseCase(), this.resolveAccuracyUseCase(), this.resolveGetClientSettingsUseCase(), this.resolveSyncMatchesByLeagueUseCase(), this.resolveGetBetCupMatchesUseCase(), this.resolveGetBetCupLeagueUseCase(), this.resolveGetBetCupMatchDetailUseCase()))
+        return this.routerFacade || (this.routerFacade = new RouterFacade(this.resolveGetMatchDetailUseCase(), this.resolveGetMatchesUseCase(), this.env, this.resolveGetSynchronizationDetailUseCase(), this.resolveGetSynchronizationsUseCase(), this.resolveAccuracyUseCase(), this.resolveGetClientSettingsUseCase(), this.resolveSyncMatchesByLeagueUseCase(), this.resolveGetBetCupMatchesUseCase(), this.resolveGetBetCupLeagueUseCase(), this.resolveGetBetCupMatchDetailUseCase(), this.resolveSyncMatchesUseCase()))
     }
 
     private resolveSyncMatchesByLeagueUseCase() {

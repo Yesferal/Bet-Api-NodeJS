@@ -7,11 +7,12 @@ import { GetMatchDetailUseCase } from 'bet-core-node/lib/domain/usecase/get.matc
 import { GetSynchronizationDetailUseCase } from 'bet-core-node/lib/domain/usecase/get.synchronization.detail'
 import { GetSynchronizationsUseCase } from 'bet-core-node/lib/domain/usecase/get.synchronizations.usecase'
 import { SyncMatchesByLeagueUseCase } from 'bet-core-node/lib/domain/usecase/betcup/server/sync.matches.by.league.usecase'
+import { SyncMatchesUseCase } from 'bet-core-node/lib/domain/usecase/sync.matches.usecase'
 import { GetAccuracyUseCase } from 'bet-core-node/lib/domain/usecase/get.accuracy.usecase'
 import { GetClientSettingsUseCase } from 'bet-core-node/lib/domain/usecase/client/get.client.settings.usecase'
 import { GetBetCupMatchesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.matches.usecase'
 import { GetBetCupMatchDetailUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.match.detail.usecase'
-import { GetBetCupLeaguesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.league.usecase'
+import { GetBetCupLeaguesUseCase } from 'bet-core-node/lib/domain/usecase/betcup/get.betcup.leagues.usecase'
 
 export class RouterFacade {
 
@@ -27,6 +28,7 @@ export class RouterFacade {
         private getBetCupMatchesUseCase: GetBetCupMatchesUseCase,
         private getBetCupLeaguesUseCase: GetBetCupLeaguesUseCase,
         private getBetCupMatchDetailUseCase: GetBetCupMatchDetailUseCase,
+        private syncMatchesUseCase: SyncMatchesUseCase,
     ) {}
 
     getMatchesRouter(): Router {
@@ -144,6 +146,50 @@ export class RouterFacade {
                     response.status(200).send(synchronization)
                 } else {
                     response.status(400).json({ message: ErrorMessage.BadRequestMissingFromOrTo })
+                }
+            } catch (e) {
+                console.log(e)
+                response.status(400).json({ message: ErrorMessage.BadRequest })
+            }
+        })
+    }
+
+    getSyncMatchesRouter(): Router {
+        return express.Router({
+            strict: true
+        }).get('/:date', async (request, response) => {
+            try {
+                const dateAsString = request.query.date?.toString()
+                if (dateAsString) {
+                    const dateOnly = dateAsString.slice(0, 10)
+                    const date = new Date(`${dateOnly}T00:00:00.000Z`)
+                    // JS Date rolls invalid days (e.g. 2026-02-31 -> 2026-03-03).
+                    // Reject if the parsed GMT date is not the same YYYY-MM-DD we received.
+                    if (isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== dateOnly) {
+                        response.status(400).json({ message: ErrorMessage.BadRequest })
+                        return
+                    }
+
+                    const notStartedParam = request.query.notStarted?.toString()
+                    // Default true. Only "false" or "0" turn it off; any other value (e.g. "testing") stays true.
+                    const notStarted = notStartedParam === undefined || (notStartedParam.toLowerCase() !== 'false' && notStartedParam !== '0')
+                    const timezone = this.env.TIMEZONE || 'GMT'
+                    const matchFilter = notStarted
+                        ? 'not-started matches only'
+                        : 'all matches for that date'
+
+                    this.syncMatchesUseCase.execute(date, notStarted)
+                    console.log(`RouterFacade: Syncing matches for ${dateOnly}, notStarted=${notStarted}. Requested at ${new Date().toISOString()}`)
+
+                    response.status(200).json({
+                        message: `Sync started for ${dateOnly} at 00:00 ${timezone}. Fetching ${matchFilter}. This response only confirms the job started; it has not finished yet. Check /synchronization?fixtureDate=${dateOnly} for the result.`,
+                        date: date,
+                        dateGmt: dateOnly,
+                        timezone: timezone,
+                        notStarted: notStarted
+                    })
+                } else {
+                    response.status(400).json({ message: ErrorMessage.BadRequestMissingDate })
                 }
             } catch (e) {
                 console.log(e)

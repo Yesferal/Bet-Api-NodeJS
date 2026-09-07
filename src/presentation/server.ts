@@ -11,7 +11,7 @@ console.log(`Core Version: ${new NodePackage().getVersion()}`)
  * Public Environment Variables
  */
 const env: Env = {
-    PORT: process.env.PORT || '',
+    PORT: process.env.PORT || '8080',
     ALLOWED_REQUESTS: Number(process.env.ALLOWED_REQUESTS) || 0,
     DELAY_BY_REQUEST: Number(process.env.DELAY_BY_REQUEST) || 3600,
     APP_VERSION: process.env.npm_package_version || '',
@@ -49,9 +49,14 @@ const di = new Di(env, privateEnv)
 const GMT_HOUR = 0
 
 /**
- * America/Lima timezone as Date
- * America/Lima hour GTM-0
- * so 0 (Server hour) - 0 (value set here) -> midnight at GMT
+ * Midnight in the server process timezone, not America/Lima.
+ * On Render/Heroku the host is UTC, which matches TIMEZONE=Africa/Bamako (GMT+0).
+ *
+ * TODO: Cron and setHours() use the OS timezone. A Lima laptop (UTC-5) will fire
+ * the job at 00:05 Lima (05:05 GMT) and compute a different calendar day than
+ * Bamako/UTC in the 19:00-23:59 Lima window. It does not throw; it silently
+ * syncs the wrong date. Fix: setUTCHours(0) and pass timezone: env.TIMEZONE
+ * to node-cron so Render, Heroku and local all follow Africa/Bamako.
  */
 function getDateAtMidnight(): Date {
     const date = new Date()
@@ -143,6 +148,7 @@ new ServerBuilder()
     .register('/', di.resolveRouterFacade().getHelloRouter())
     .registerPrivate('/match', di.resolveRouterFacade().getMatchDetailRouter())
     .registerPrivate('/matches', di.resolveRouterFacade().getMatchesRouter())
+    .registerPrivate('/syncMatches', di.resolveRouterFacade().getSyncMatchesRouter())
     .registerPrivate('/synchronization', di.resolveRouterFacade().getSynchronizationDetailRouter())
     .registerPrivate('/synchronizations', di.resolveRouterFacade().getSynchronizationsRouter())
     .registerPrivate('/accuracy', di.resolveRouterFacade().getAccuracyRouter())
