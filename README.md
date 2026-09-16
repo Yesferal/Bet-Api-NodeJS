@@ -4,6 +4,9 @@ This is an API about bets, predictions and football matches.
 
 1. Show best football matches options to bet
 
+## Docs
+Product backlog: [docs/ROADMAP.md](docs/ROADMAP.md)
+
 ## Installation
 First, this project needs Git and Node JS previously installed, the steps for installation depend on the OS you have.
 
