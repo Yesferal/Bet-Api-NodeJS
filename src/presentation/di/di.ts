@@ -191,11 +191,11 @@ export class Di {
     }
 
     private resolveGetMatchesUseCase() {
-        return this.getMatchesUseCase || (this.getMatchesUseCase = new GetMatchesUseCase(this.resolveMatchRepository(), this.resolveDateUtil()))
+        return this.getMatchesUseCase || (this.getMatchesUseCase = new GetMatchesUseCase(this.resolveMatchRepository(), this.resolveDateUtil(), this.resolveGetBetResultUseCase()))
     }
 
     private resolveGetMatchDetailUseCase() {
-        return this.getMatchDetailUseCase || (this.getMatchDetailUseCase = new GetMatchDetailUseCase(this.resolveMatchRepository()))
+        return this.getMatchDetailUseCase || (this.getMatchDetailUseCase = new GetMatchDetailUseCase(this.resolveMatchRepository(), this.resolveGetBetResultUseCase()))
     }
 
     private resolveGetSynchronizationDetailUseCase() {
